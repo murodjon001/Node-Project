@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String        @id @default(uuid())
+  firstName String        @db.VarChar(50) @map("first_name")
+  lastName  String        @db.VarChar(50) @map("last_name")
+  email     String        @db.VarChar(50) @unique
+  password  String        @db.VarChar(200)
+  total_balance TotalBalance[]
+  wallet      Wallet[]
+  createdAt DateTime      @default(now())
+  @@map("users")
+}
+model Wallet {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(50)
+  colors      Colors   @default(GREEN)
+  currency    Currency  @default(USD)
+  description String?
+  transaction Transaction[]
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @unique
+  createdAt   DateTime  @default(now())
+
+// @@unique(fields: [name, user_id], name: "unique_per_user")
+  @@map("wallet")
+
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(50) @unique
+  colors      Colors   @default(GREEN)
+  operation   Operation @default(INCOME)
+  description String?
+  transaction Transaction[]
+  createdAt DateTime      @default(now())
+
+
+  @@map("category")
+}
+
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  amount      Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  wallet      Wallet    @relation(fields: [walletId], references: [id])
+  totalBalance          TotalBalance      @relation(fields: [balanceId], references: [id])
+  createdAt   DateTime  @default(now())
+  description String?
+  categoryId  Int 
+  walletId    Int 
+  balanceId   Int @unique
+  unique      String @default(uuid()) 
+ 
+
+  @@map("transaction")
+}
+
+model TotalBalance {
+  id              Int           @id @default(autoincrement())
+  balance         Int
+  expence         Int
+  income          Int 
+  userId          String 
+  user            User   @relation(fields: [userId], references: [id])
+  transaction     Transaction[]
+  unique          String @default(uuid())
+  createdAt DateTime      @default(now())
+
+ 
+  @@map("total_balance")
+
+}
+
+enum Operation {
+  EXPENSE
+  INCOME
+}
+
+enum Colors {
+  RED
+  GREEN
+  
+}
+
+enum Currency {
+  USD
+  EUR
+  RUB
+  UZS
+}
+
+enum Role {
+  USER
+  ADMIN
+}

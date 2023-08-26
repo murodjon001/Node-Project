@@ -1,0 +1,54 @@
+app:
+    User
+    Dashboard
+    Transaction
+
+models:
+
+    User:
+        id @id
+        firstName
+        lastName
+        email @unique
+        password
+    Wallet:
+        id @id
+        name 
+        color
+        currency enum{dollar, evro, rubl, sum}
+        description
+    Category:
+        id @id
+        name 
+        color
+        operation  enum {income/expence}
+    Transaction:
+        id @id
+        amount 
+        category  Fk -> Category
+        wallet    FK -> Wallet
+        createdAt 
+        description
+    Balance:
+        id @id
+        balance 
+        expence
+        income
+        saving_rate
+
+User appida amalga oshiriladigan ishlar:
+    User appida tizimga avtorizatsya yoki autentifikatsya qilib kirmoqchi
+    bo'lgan foydalanuvchilarni ro'yxatga olish va tizimga kiritish(login) ishlari bajariladi.
+    Tizimda ro'yxatdan o'tishda biz JWT tamoyiliga asoslanib foydalanuvchiga token beramiz.  
+
+
+Dashboard appida amalga oshiriladigan ishlar:
+    User muvaffaqiyatli authentifikatsyadan o'tgandan keyin, Dastur uni o'ziga tegishli 
+    dashboardga yo'naltirishi lozim. Dashboard qismida:
+            Balansdagi pullar,
+            Chiqimlar(Expence),
+            Kirimlar (income),
+            Tejamkorlik darajasi(saving rate),
+            Transaktsyalar ro'yxarti(eng oxirgilaridan boshlab (DESC))
+            Wallet ro'yxati  
+            
